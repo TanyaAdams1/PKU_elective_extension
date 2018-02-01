@@ -1,3 +1,13 @@
+var courses=[];
+var hidden_courses=[];
+
+function MyCourse(seq_no, name, type, tr) {
+    this.seq_no=seq_no;
+    this.name=name;
+    this.type=type;//1-预选 0-选课计划
+    this.tr=tr;
+}
+MyCourse.prototype.class_name="MyCourse";
 
 function LoadCourses(fromid, retry,url, callback) {
     var collection = null;
@@ -36,14 +46,14 @@ function LoadCourses(fromid, retry,url, callback) {
 /**
  *
  * @param {string} key
- * @returns {course|boolean}
+ * @returns {MyCourse|boolean}
  */
 function find_course(key){
-    for (var course in courses){
-        if(course.seq_no===key)
-            return course;
-        else if(course.name===key)
-            return course;
+    for (var i=0;i<courses.length;i++){
+        if(courses[i].seq_no===key)
+            return courses[i];
+        if(courses[i].name===key)
+            return courses[i];
     }
     return false;
 }
@@ -52,56 +62,46 @@ function find_course(key){
  *
  * @param {string} id
  */
-function hide_course(id) {
-    hidden_courses+=find_course(id);
-}
-
-/***
- *
- * @param {string} id
- * @returns {boolean}
- */
-function check_if_hidden(id) {
-    return ($.inArray(find_course(id),hidden_courses,0))!==-1;
+function hide_course(id){
+    var course_tr_list = $("table.datagrid:eq(0) tr:gt(0)").toArray();
+    refresh_course(course_tr_list);
+    if (!find_course(id))
+        return;
+    hidden_courses=JSON.parse(localStorage["hidden"]);
+    hidden_courses.push(find_course(id).name);
+    localStorage["hidden"]=JSON.stringify(hidden_courses);
+    hide_courses();
 }
 
 /**
  *
- * @param {jQuery} course_list
+ * @param {$} course_list
  */
 function refresh_course(course_list) {
-    if(!localStorage["Initiated"]){
-        localStorage["all"]=JSON.stringify([]);
-        localStorage["hidded"]=JSON.stringify([]);
-        localStorage["Initiated"]=true;
-    }
     courses=[];
     try {
         hidden_courses = JSON.parse(localStorage["hidden"]).toArray();
     }catch (e){
         hidden_courses=[]
     }
-    for(var i=0;i<course_list.len;i++){
-        var course=parse_course(course_list[i]);
+    for(var i=0;i<course_list.length;i++){
+        var course=parse_course($(course_list[i]));
         courses.push(course);
     }
-    for(_course in hidden_courses){
-        if(!$.inArray(_course,courses)){
-            courses.splice(courses.indexOf(_course),1)
-        }
-    }
     localStorage["all"]=JSON.stringify(courses);
-    localStorage["hidden"]=JSON.stringify(hidden_courses);
+
+    console.log("in refresh MyCourse,number: "+courses.length);
+    //TODO:Also refresh hidden courses
 }
 /**
- * Parse a course from $tr element
+ * Parse a MyCourse from $tr element
  * @param {jQuery|string} _tr then $tr element
- * @return course
+ * @return MyCourse
  */
 function parse_course(_tr) {
     try {
         if (location.toString().indexOf("electiveWork") !== -1) {
-            var tr = $(_tr);
+            var tr = $(_tr).clone();
             tr.removeClass();
             var name = tr.find("td:eq(0) a").text();
             var view_url = tr.find("td:eq(0) a").attr("href");
@@ -110,22 +110,32 @@ function parse_course(_tr) {
             var elect = tr.find("td:eq(9) span").text();
             var current_elect_num = parseInt(elect.split(" / ")[0]);
             var max_elect_num = parseInt(elect.split(" / ")[1]);
-            var course = new course(seq_no, name, 1, tr);
+            var course = new MyCourse(seq_no, name, 1, tr);
             course.current_elect_num = current_elect_num;
             course.max_elect_num = max_elect_num;
             course.lecturer = lecturer;
             return course;
         }
         else {
-            tr = $(_tr);
+            tr = $(_tr).clone();
             tr.removeClass();
             name = tr.find("td:eq(0) a").text();
             view_url = tr.find("td:eq(0) a").attr("href");
             seq_no = view_url.split("course_seq_no=")[1];
-            course = new course(seq_no, name, 0, tr);
+            course = new Mycourse(seq_no, name, 0, tr);
             return course;
         }
     }catch (e){
-        console.log("Exception in parsing course,_tr is "+_tr.toString());
+        console.log("Exception in parsing MyCourse, "+e.toString());
+    }
+}
+
+function hide_courses() {
+    var courses_list = $("table.datagrid:eq(0) tr[class!=datagrid-header]").toArray();
+    for(var course in courses_list){
+        var my_course_parsed=parse_course(courses_list[course]);
+        if($.inArray(my_course_parsed.name,hidden_courses)!==-1) {
+            $(courses_list[course]).hide();
+        }
     }
 }

@@ -32,7 +32,8 @@
        "exclude_matches": [  ],
        "include_globs": [  ],
        "js": [ "js/jquery-3.3.1.min.js", "js/bootstrap.min.js", "js/extended/common.js","js/extended/inject.js" ],
-       "matches": [ "http://elective.pku.edu.cn/elective2008/edu/pku/stu/elective/controller/electiveWork/ElectiveWorkController.jpf" ],
+       "matches": [ "http://elective.pku.edu.cn/elective2008/edu/pku/stu/elective/controller/electiveWork/ElectiveWorkController.jpf",
+       "http://elective.pku.edu.cn/elective2008/edu/pku/stu/elective/controller/electivePlan/ElectivePlanController.jpf"],
        "run_at": "document_idle"
      }],
    "content_security_policy": "script-src 'self'; object-src 'self';",
@@ -50,5 +51,5 @@
    "permissions": [ "notifications", "http://elective.pku.edu.cn/", "http://api.zakelly.com/getclasshelper/", "http://www.zakelly.com/", "webRequest", "webRequestBlocking" ],
    "update_url": "https://clients2.google.com/service/update2/crx",
    "version": "2.1.3",
-   "web_accessible_resources": [ "resources/mando-5.mp3", "html/panel.html", "icons/icon_256.png" ]
+   "web_accessible_resources": [ "resources/mando-5.mp3", "html/panel.html", "icons/icon_256.png","js/extended/common.js" ]
 }
