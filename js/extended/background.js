@@ -6,10 +6,10 @@ var course=function (seq_no, name,type,tr) {
     this.tr=tr;
 };
 
-var hidden_courses=[];
-/**
- *
- * @type {jQuery|Array}
- */
-var courses;
-courses = [];
+    var hidden_courses=localStorage["hidden"];
+    /**
+     *
+     * @type {jQuery|Array}
+     */
+    var courses;
+    courses = localStorage["all"];

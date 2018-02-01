@@ -70,10 +70,19 @@ function check_if_hidden(id) {
  * @param {jQuery} course_list
  */
 function refresh_course(course_list) {
-
+    if(!localStorage["Initiated"]){
+        localStorage["all"]=JSON.stringify([]);
+        localStorage["hidded"]=JSON.stringify([]);
+        localStorage["Initiated"]=true;
+    }
     courses=[];
-    for(var _course in course_list){
-        var course=parse_course(_course);
+    try {
+        hidden_courses = JSON.parse(localStorage["hidden"]).toArray();
+    }catch (e){
+        hidden_courses=[]
+    }
+    for(var i=0;i<course_list.len;i++){
+        var course=parse_course(course_list[i]);
         courses.push(course);
     }
     for(_course in hidden_courses){
@@ -81,6 +90,8 @@ function refresh_course(course_list) {
             courses.splice(courses.indexOf(_course),1)
         }
     }
+    localStorage["all"]=JSON.stringify(courses);
+    localStorage["hidden"]=JSON.stringify(hidden_courses);
 }
 /**
  * Parse a course from $tr element
@@ -88,29 +99,33 @@ function refresh_course(course_list) {
  * @return course
  */
 function parse_course(_tr) {
-    if(location.toString().indexOf("electiveWork")!==-1) {
-        var tr=$(_tr);
-        tr.removeClass();
-        var name = tr.find("td:eq(0) a").text();
-        var view_url = tr.find("td:eq(0) a").attr("href");
-        var seq_no = view_url.split("course_seq_no=")[1];
-        var lecturer=tr.find("td:eq(4) span").text();
-        var elect=tr.find("td:eq(9) span").text();
-        var current_elect_num=parseInt(elect.split(" / ")[0]);
-        var max_elect_num=parseInt(elect.split(" / ")[1]);
-        var course=new course(seq_no,name,1,tr);
-        course.current_elect_num=current_elect_num;
-        course.max_elect_num=max_elect_num;
-        course.lecturer=lecturer;
-        return course;
-    }
-    else {
-        tr=$(_tr);
-        tr.removeClass();
-        name = tr.find("td:eq(0) a").text();
-        view_url = tr.find("td:eq(0) a").attr("href");
-        seq_no = view_url.split("course_seq_no=")[1];
-        course=new course(seq_no,name,0,tr);
-        return course;
+    try {
+        if (location.toString().indexOf("electiveWork") !== -1) {
+            var tr = $(_tr);
+            tr.removeClass();
+            var name = tr.find("td:eq(0) a").text();
+            var view_url = tr.find("td:eq(0) a").attr("href");
+            var seq_no = view_url.split("course_seq_no=")[1];
+            var lecturer = tr.find("td:eq(4) span").text();
+            var elect = tr.find("td:eq(9) span").text();
+            var current_elect_num = parseInt(elect.split(" / ")[0]);
+            var max_elect_num = parseInt(elect.split(" / ")[1]);
+            var course = new course(seq_no, name, 1, tr);
+            course.current_elect_num = current_elect_num;
+            course.max_elect_num = max_elect_num;
+            course.lecturer = lecturer;
+            return course;
+        }
+        else {
+            tr = $(_tr);
+            tr.removeClass();
+            name = tr.find("td:eq(0) a").text();
+            view_url = tr.find("td:eq(0) a").attr("href");
+            seq_no = view_url.split("course_seq_no=")[1];
+            course = new course(seq_no, name, 0, tr);
+            return course;
+        }
+    }catch (e){
+        console.log("Exception in parsing course,_tr is "+_tr.toString());
     }
 }

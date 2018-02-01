@@ -161,7 +161,7 @@
                 var container;
 
                 $.ajax({
-                    url: chrome.extension.getURL('panel.html'),
+                    url: chrome.extension.getURL('html/panel.html'),
                     async: false,
                     success: function (data) {
                         container = $(data);
