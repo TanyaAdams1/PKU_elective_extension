@@ -1,5 +1,6 @@
 var courses=[];
 var hidden_courses=[];
+var Initilized = false;
 
 function MyCourse(seq_no, name, type, tr) {
     this.seq_no=seq_no;
@@ -7,7 +8,26 @@ function MyCourse(seq_no, name, type, tr) {
     this.type=type;//1-预选 0-选课计划
     this.tr=tr;
 }
-MyCourse.prototype.class_name="MyCourse";
+
+function init() {
+    chrome.storage.local.get({
+        all: [],
+        hidden: []
+    }, function (items) {
+        courses = items.all;
+        hidden_courses = items.hidden;
+        console.log("Got all:" + courses.toString());
+        console.log("Got hidden:" + hidden_courses.toString());
+        hide_courses();
+    })
+}
+
+function update() {
+    chrome.storage.local.set({
+        all: courses,
+        hidden: hidden_courses
+    })
+}
 
 function LoadCourses(fromid, retry,url, callback) {
     var collection = null;
@@ -63,13 +83,12 @@ function find_course(key){
  * @param {string} id
  */
 function hide_course(id){
-    var course_tr_list = $("table.datagrid:eq(0) tr:gt(0)").toArray();
-    refresh_course(course_tr_list);
     if (!find_course(id))
         return;
-    hidden_courses=JSON.parse(localStorage["hidden"]);
-    hidden_courses.push(find_course(id).name);
-    localStorage["hidden"]=JSON.stringify(hidden_courses);
+    console.log("hiding:" + find_course(id).name);
+    if ($.inArray(find_course(id).name, hidden_courses) === -1)
+        hidden_courses.push(find_course(id).name);
+    update();
     hide_courses();
 }
 
@@ -79,19 +98,13 @@ function hide_course(id){
  */
 function refresh_course(course_list) {
     courses=[];
-    try {
-        hidden_courses = JSON.parse(localStorage["hidden"]).toArray();
-    }catch (e){
-        hidden_courses=[]
-    }
     for(var i=0;i<course_list.length;i++){
         var course=parse_course($(course_list[i]));
         courses.push(course);
     }
-    localStorage["all"]=JSON.stringify(courses);
-
-    console.log("in refresh MyCourse,number: "+courses.length);
-    //TODO:Also refresh hidden courses
+    chrome.storage.local.set({
+        all: courses
+    })
 }
 /**
  * Parse a MyCourse from $tr element
@@ -132,10 +145,34 @@ function parse_course(_tr) {
 
 function hide_courses() {
     var courses_list = $("table.datagrid:eq(0) tr[class!=datagrid-header]").toArray();
-    for(var course in courses_list){
+    for (var course = 0; course < courses_list.length; course++) {
         var my_course_parsed=parse_course(courses_list[course]);
-        if($.inArray(my_course_parsed.name,hidden_courses)!==-1) {
+        if (my_course_parsed && $.inArray(my_course_parsed.name, hidden_courses) !== -1) {
             $(courses_list[course]).hide();
         }
+        else
+            $(courses_list[course]).show();
+    }
+    var insert_point = $("#course_insert_point");
+    insert_point.find("a").remove();
+    for (var i = 0; i < hidden_courses.length; i++) {
+        insert_point.append(
+            $("<a class='btn btn-dark btn-sm text-light m-2' onclick='document.dispatchEvent(" +
+                "new CustomEvent(\"pku_elective_event\",{" +
+                "detail:{" +
+                "message:\"show\"," +
+                "name:\"" + hidden_courses[i] + "\"" +
+                "}" +
+                "}))'>$text$</a>".replace(
+                    /\$text\$/g, hidden_courses[i]
+                ))
+        )
+    }
+}
+
+function show_course(name) {
+    if ($.inArray(name, hidden_courses) !== -1) {
+        hidden_courses.splice($.inArray(name, hidden_courses), 1);
+        hide_courses();
     }
 }

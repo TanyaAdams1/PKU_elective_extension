@@ -1,0 +1,32 @@
+<div class="extention-container">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col justify-content-center">
+                <div class="btn btn-sm btn-secondary" id="hide_setting">
+                    隐藏设置
+                </div>
+                <div class="card" id="setting_panel">
+                    <div class="card-header">
+                        设置
+                    </div>
+                    <div class="card-body">
+                        <div class="container-fluid">
+                            <div class="row justify-content-between">
+                                <div class="col-12">
+                                    隐藏课程列表
+                                </div>
+                                <div class="col" id="course_insert_point"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $("#hide_setting").on("click", function (event) {
+        event.preventDefault();
+        $("#setting_panel").slideToggle()
+    })
+</script>
