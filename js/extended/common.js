@@ -173,6 +173,7 @@ function hide_courses() {
 function show_course(name) {
     if ($.inArray(name, hidden_courses) !== -1) {
         hidden_courses.splice($.inArray(name, hidden_courses), 1);
+        update();
         hide_courses();
     }
 }
