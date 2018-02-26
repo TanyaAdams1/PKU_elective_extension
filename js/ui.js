@@ -25,12 +25,14 @@
 
         // 获得从id开始的下20个课程
         function GetNext(id, retry) {
-            $.get("http://elective.pku.edu.cn/elective2008/edu/pku/stu/elective/controller/supplement/SupplyCancel.do?netui_row=electableListGrid%3B" + id, function (html) {
+            $.get("http://elective.pku.edu.cn/elective2008/edu/pku/stu/elective/controller/supplement/supplement.jsp?netui_pagesize=electableListGrid%3B50&netui_row=electableListGrid%3B" + id, function (html) {
                 if (!html)
                     if (retry)
-                        return setTimeout(GetNext, 500, fromid, retry);
-                    else
+                        return setTimeout(GetNext, 500, id, retry);
+                    else {
+                        console.log("Load courses failed");
                         return callback(false);
+                    }
                 
                 var newPageContent = $(html).find("table.datagrid:eq(0) tr:gt(0)");
                 
@@ -38,22 +40,23 @@
                     collection = newPageContent.filter(":lt(" + (newPageContent.length - 2) + ")");
                 else
                     collection = collection.add(newPageContent.filter(":lt(" + (newPageContent.length - 2) + ")"));
-                if (newPageContent.length - 2 === 20)
-                    GetNext(id + 20);
+                if (newPageContent.length - 2 === 50)
+                    GetNext(id + 50);
                 else
                     callback(collection);
             }).fail(function () {
                 if (retry)
                     return setTimeout(GetNext, 500, fromid, retry);
-                else
+                else {
                     return callback(false);
+                }
             });
         }
 
         GetNext(fromid, retry);
     }
 
-    $(document).ready(function () {
+    $(function () {
         try {
             if (arguments.callee.hasExecuted)
                 return;
@@ -69,8 +72,8 @@
             currID = parseInt(currID.substr(currID.indexOf(";") + 1));
         var currInPage = $("table.datagrid:eq(0) tr").length - 3; // 当前页有多少待选课程
 
-        if (currInPage === 20)
-            LoadCourses(currID + 20, true, function (courses) {
+        if (currInPage === 50)
+            LoadCourses(currID + 50, true, function (courses) {
                 $("table.datagrid:eq(0)").append(courses);
                 setTimeout(Final, 1); // 清除递归
             });

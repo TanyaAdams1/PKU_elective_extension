@@ -3,7 +3,7 @@
 }
 
 .extention-container {
-    position: sticky;
+    position: fixed;
   z-index: 9999;
   left: 0;
   right: 0;
