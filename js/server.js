@@ -58,7 +58,7 @@ function checkUpdate(show) {
 function desktopNotify(icon, title, body, clickFunc) {
     try{
         var n = new Notification(title, {
-            'icon':'http://elective.pku.edu.cn/elective2008/resources/images/'+icon+'.gif',  // icon url - can be relative
+            'icon':'https://elective.pku.edu.cn/elective2008/resources/images/'+icon+'.gif',  // icon url - can be relative
             'body':body  // notification body text
         });
         n.onclick = clickFunc;
@@ -82,7 +82,7 @@ function playSound(loop){
     if (sound == null){
         loadSound();
     }
-    sound.loop = (loop == true);
+    sound.loop = (loop === true);
     sound.play();
 }
 

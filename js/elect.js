@@ -3,7 +3,7 @@
  */
 
 
-var electUrl="http://elective.pku.edu.cn/elective2008/edu/pku/stu/elective/controller/supplement/electSupplement.do?index=%input_index&seq=%input_number";
+var electUrl="https://elective.pku.edu.cn/elective2008/edu/pku/stu/elective/controller/supplement/electSupplement.do?index=%input_index&seq=%input_number";
 
 function elect(course) {
     if (!course || course.isDone)

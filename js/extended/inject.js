@@ -26,7 +26,7 @@ $(function () {
     }
 
     if(location.toString().indexOf("Work")!==-1) {
-        var url = "http://elective.pku.edu.cn/elective2008/edu/pku/stu/elective/controller/electiveWork/election.jsp?netui_pagesize=electableCourseListGrid%3B20&netui_row=electableCourseListGrid%3B";
+        var url = "https://elective.pku.edu.cn/elective2008/edu/pku/stu/elective/controller/electiveWork/election.jsp?netui_pagesize=electableCourseListGrid%3B20&netui_row=electableCourseListGrid%3B";
         LoadCourses(20,true,url,add_to_tr);
         $.ajax({
             url: chrome.extension.getURL("html/extended/ui.html"),

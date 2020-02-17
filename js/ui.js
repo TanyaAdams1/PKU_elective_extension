@@ -9,11 +9,11 @@
         return;
 
     $.QueryString = (function (a) {
-        if (a == "") return {};
+        if (a === "") return {};
         var b = {};
         for (var i = 0; i < a.length; ++i) {
             var p = a[i].split('=');
-            if (p.length != 2) continue;
+            if (p.length !== 2) continue;
             b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
         }
         return b;
@@ -25,7 +25,7 @@
 
         // 获得从id开始的下20个课程
         function GetNext(id, retry) {
-            $.get("http://elective.pku.edu.cn/elective2008/edu/pku/stu/elective/controller/supplement/supplement.jsp?netui_pagesize=electableListGrid%3B50&netui_row=electableListGrid%3B" + id, function (html) {
+            $.get("https://elective.pku.edu.cn/elective2008/edu/pku/stu/elective/controller/supplement/supplement.jsp?netui_pagesize=electableListGrid%3B50&netui_row=electableListGrid%3B" + id, function (html) {
                 if (!html)
                     if (retry)
                         return setTimeout(GetNext, 500, id, retry);
@@ -117,7 +117,7 @@
             function AttachCourseRow(row, index) {
                 var $this = row;
                 var actionHref = $this.find("td:last-child a"), chkbox;
-                if (actionHref.length == 0)
+                if (actionHref.length === 0)
                     return null;
                 var courseData = ArgParse($this.find("td:first a"), actionHref, index);
                 var numstrs = $this.find("[id^='electedNum']").text().split(" / ");
@@ -139,7 +139,7 @@
 
             $("table.datagrid:eq(0) tr").each(function (i) {
                 var $this = $(this);
-                if (i == 0)
+                if (i === 0)
                     $this.append("<th class='datagrid'>监视</th>");
                 else
                     AttachCourseRow($this, i - 1);
@@ -209,9 +209,9 @@
                     });
                 });
 
-                controls.imgname.attr("src", "http://elective.pku.edu.cn/elective2008/DrawServlet?Rand=" + Math.random())
+                controls.imgname.attr("src", "https://elective.pku.edu.cn/elective2008/DrawServlet?Rand=" + Math.random())
                     .click(function () {
-                        this.src = "http://elective.pku.edu.cn/elective2008/DrawServlet?Rand=" + Math.random();
+                        this.src = "https://elective.pku.edu.cn/elective2008/DrawServlet?Rand=" + Math.random();
                     }).css("cursor", "pointer");
 
                 // 绑定事件及逻辑
@@ -302,11 +302,11 @@
                         var hasElected = false;
                         courserows.each(function (index) {
                             var $this = $(this);
-                            var wasAvailable = $this.attr("name") == "available";
+                            var wasAvailable = $this.attr("name") === "available";
 
                             // 更新旧信息
                             var actionHref = $this.find("td:last-child a");
-                            if (actionHref.length == 0)
+                            if (actionHref.length === 0)
                                 return null;
                             var courseData = ArgParse($this.find("td:first a"), actionHref, index), lastData;
                             lastData = Course.prototype.courses.get(courseData.id);
